@@ -79,4 +79,8 @@ public class AppWidgetRemoteController extends RemoteController implements
         remoteView.setOnClickPendingIntent(viewId, PendingIntent.getBroadcast(context, 0, active, PendingIntent.FLAG_UPDATE_CURRENT));
 	}
 	
+	public void sendButton(String buttonCode){
+		mEventClientManager.sendButton("R1", buttonCode, false, true, false, (short)0, (byte)0);
+	}
+	
 }
