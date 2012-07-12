@@ -33,7 +33,7 @@ public class AppWidgetRemoteController extends RemoteController implements
 			Command<?> source) {
 		// TODO Auto-generated method stub
 		Log.w("onWrongConnectionState","catch");
-		super.onWrongConnectionState(state, manager, source);
+		// super.onWrongConnectionState(state, manager, source);
 	}
 
 	@Override
@@ -71,6 +71,7 @@ public class AppWidgetRemoteController extends RemoteController implements
 	
         Intent active = new Intent(context, caller.getClass());
         active.setAction(action);
+        
         active.putExtra(COMMAND, buttonCode);
         
         // Make this pending intent unique to prevent updating other intents
