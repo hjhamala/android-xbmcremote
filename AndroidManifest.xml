@@ -91,7 +91,7 @@
 			</intent-filter>
 		</receiver>
 		
-		<receiver android:name=".presentation.appwidget.RemoteControllerWidget" >
+		<receiver android:name=".presentation.appwidget.RemoteControllerWidget" android:label="remote_widget">
             <intent-filter >
                 <action 
                     android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -101,6 +101,19 @@
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/app_widget_remote" 
+                />
+        </receiver>
+		
+		<receiver android:name=".presentation.appwidget.NowPlayingWidget" android:label="now_playing_widget" >
+            <intent-filter >
+                <action 
+                    android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            	<action android:name="org.xbmc.android.remote.WIDGET_CONTROL" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/app_widget_now_playing" 
                 />
         </receiver>
 		
