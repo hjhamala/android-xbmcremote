@@ -151,7 +151,7 @@ public class NowPlayingActivity extends Activity {
 
 	public void updateProgress(int duration, int time) {
 		mSeekBar.setEnabled(duration != 0);
-
+		
 		mCounterLeftView.setVisibility(View.VISIBLE);
 		mCounterLeftView.setText(Song.getDuration(time + 1));
 		mCounterRightView.setVisibility(View.VISIBLE);

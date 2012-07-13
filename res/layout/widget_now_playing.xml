@@ -4,20 +4,20 @@
         android:layout_height="fill_parent" >
 
         <TextView
-            android:id="@+id/textView1"
+            android:id="@+id/widget_now_playing_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
             android:text="Medium Text"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/widget_now_playing_title2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_below="@+id/textView1"
+            android:layout_below="@+id/widget_now_playing_title"
+            android:layout_marginTop="16dp"
             android:text="Small Text"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -26,16 +26,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_below="@+id/textView2"
-            android:layout_marginTop="14dp"
+            android:layout_below="@+id/widget_now_playing_title2"
             android:background="@drawable/button_stop" />
 
         <ImageButton
             android:id="@+id/widget_now_playing_button_play"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignRight="@+id/textView1"
             android:layout_alignTop="@+id/widget_now_playing_button_stop"
+            android:layout_toRightOf="@+id/widget_now_playing_button_stop"
             android:background="@drawable/button_play" />
 
     </RelativeLayout>

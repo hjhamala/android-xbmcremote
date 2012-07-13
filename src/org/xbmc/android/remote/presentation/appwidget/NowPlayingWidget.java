@@ -47,6 +47,13 @@ public class NowPlayingWidget extends AppWidgetProvider {
 			AppWidgetManager.getInstance(context).updateAppWidget(widgetId,
 					remoteView);
 		}
+		
+		Intent intent = new Intent(context.getApplicationContext(),
+				UpdateNowPlayingWidgetService.class);
+		intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, allWidgetIds);
+
+		// Update the widgets via the service
+		context.startService(intent);
 	}
 
 	
