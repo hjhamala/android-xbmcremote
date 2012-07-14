@@ -1,32 +1,45 @@
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" >
-
+        android:layout_height="fill_parent" 
+		 android:background="@drawable/widget_shape" 
+		android:padding="4dp">
         <TextView
-            android:id="@+id/widget_now_playing_title"
+            android:id="@+id/widget_now_playing_artist"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:text="Medium Text"
+            android:text="Artist"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
-            android:id="@+id/widget_now_playing_title2"
+            android:id="@+id/widget_now_playing_song"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_below="@+id/widget_now_playing_title"
-            android:layout_marginTop="16dp"
-            android:text="Small Text"
+            android:layout_below="@+id/widget_now_playing_artist"
+            android:layout_marginTop="4dp"
+            android:text="Song"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
+        <TextView
+            android:id="@+id/widget_now_playing_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/widget_now_playing_artist"
+            android:layout_toRightOf="@+id/widget_now_playing_song"
+           	android:layout_marginTop="4dp"
+           	android:layout_marginLeft="4dp"
+            android:text="Duration"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+        
         <ImageButton
             android:id="@+id/widget_now_playing_button_stop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_below="@+id/widget_now_playing_title2"
+            android:layout_alignParentBottom="true"
+            android:layout_marginTop="4dp"
             android:background="@drawable/button_stop" />
 
         <ImageButton
@@ -35,6 +48,8 @@
             android:layout_height="wrap_content"
             android:layout_alignTop="@+id/widget_now_playing_button_stop"
             android:layout_toRightOf="@+id/widget_now_playing_button_stop"
+            android:layout_marginLeft="4dp"
             android:background="@drawable/button_play" />
+
 
     </RelativeLayout>
