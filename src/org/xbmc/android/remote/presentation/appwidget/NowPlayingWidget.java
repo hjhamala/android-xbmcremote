@@ -26,7 +26,7 @@ public class NowPlayingWidget extends AppWidgetProvider {
 	public static final String EXTRA_ITEM = "com.example.android.stackwidget.EXTRA_ITEM";
 	public static final String ACTION_WIDGET_CONTROL = "org.xbmc.android.remote.WIDGET_CONTROL";
 	public static final String URI_SCHEME = "remote_controller_widget";
-
+	public static final String LOG = "NowPlayingWidget";
 
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager,
@@ -34,6 +34,8 @@ public class NowPlayingWidget extends AppWidgetProvider {
 		// If the app is not initialized this should cause it to try connect to
 		// the latest host and we also avoid noSettings exception
 		HostFactory.readHost(context);
+		
+		
 		
 		ComponentName thisWidget = new ComponentName(context,
 				NowPlayingWidget.class);
@@ -48,13 +50,21 @@ public class NowPlayingWidget extends AppWidgetProvider {
 					remoteView);
 		}
 		
+		Log.i(LOG, "onUpdate");
 		Intent intent = new Intent(context.getApplicationContext(),
 				UpdateNowPlayingWidgetService.class);
-		intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, allWidgetIds);
-
-		// Update the widgets via the service
+		// intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, allWidgetIds);
+		intent.putExtra(UpdateNowPlayingWidgetService.COMMAND, UpdateNowPlayingWidgetService.START_SERVICE);
+		
 		context.startService(intent);
 	}
-
+	@Override
+	public void onDeleted(Context context, int[] appWidgetIds){
+		
+		Intent intent = new Intent(context.getApplicationContext(),
+				UpdateNowPlayingWidgetService.class);
+		
+		context.stopService(intent);
+	}
 	
 }

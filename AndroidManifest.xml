@@ -117,6 +117,10 @@
                 />
         </receiver>
 		
+		
+        
+		
+		
 		<provider android:name=".business.provider.HostProvider" android:authorities="org.xbmc.android.provider.remote" />
 		
 		<service android:name=".presentation.appwidget.UpdateNowPlayingWidgetService"></service> 
