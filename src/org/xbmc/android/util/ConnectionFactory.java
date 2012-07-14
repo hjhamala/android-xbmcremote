@@ -159,7 +159,7 @@ public class ConnectionFactory {
 	}
 	
 	public static synchronized NowPlayingPollerThread unSubscribeNowPlayingPollerThread(Context context,
-			Handler mNowPlayingHandler, boolean stop) {
+			Handler mNowPlayingHandler) {
 		if (sNowPlayingPoller != null){
 			sNowPlayingPoller.unSubscribe(mNowPlayingHandler);		
 			}

@@ -79,9 +79,7 @@ public class UpdateNowPlayingWidgetService extends Service implements Callback {
 				subscribePoller();
 			} else if (command.equals(CONNECTION_ERROR)){
 				Log.e(LOG, "Connection error");
-				// Lets wait for five seconds and try again
-				Log.e(LOG, "" + last_error_milli_sedonds/1000);
-				Log.e(LOG, "" + SystemClock.elapsedRealtime()/1000);
+				// Lets wait for 10 seconds and try again
 				if (last_error_milli_sedonds < SystemClock.elapsedRealtime() - 10 * 1000){
 					unSubscribePoller();
 					Log.e(LOG, "Wait for five seconds");
@@ -91,7 +89,7 @@ public class UpdateNowPlayingWidgetService extends Service implements Callback {
 					 PendingIntent sender = PendingIntent.getBroadcast(this.getApplicationContext(), 192837, wakeup_intent, PendingIntent.FLAG_UPDATE_CURRENT);
 					 // Get the AlarmManager service
 					 AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
-					 am.set(AlarmManager.RTC, System.currentTimeMillis()+1000, sender);
+					 am.set(AlarmManager.RTC, System.currentTimeMillis()+10000, sender);
 					 
 					 last_error_milli_sedonds = SystemClock.elapsedRealtime();
 				} else {
@@ -175,7 +173,7 @@ public class UpdateNowPlayingWidgetService extends Service implements Callback {
 	public void unSubscribePoller(){
 		Log.i(LOG, "UnSubscriping");
 		
-		ConnectionFactory.unSubscribeNowPlayingPollerThread(this.getApplicationContext(), mNowPlayingHandler, true);
+		ConnectionFactory.unSubscribeNowPlayingPollerThread(this.getApplicationContext(), mNowPlayingHandler);
 		
 	}
 	@Override

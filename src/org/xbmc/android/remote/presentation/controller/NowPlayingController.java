@@ -200,7 +200,7 @@ public class NowPlayingController extends AbstractController implements INotifia
 	}
 	
 	public void onActivityPause() {
-		ConnectionFactory.unSubscribeNowPlayingPollerThread(mActivity.getApplicationContext(), mNowPlayingHandler, true);
+		ConnectionFactory.unSubscribeNowPlayingPollerThread(mActivity.getApplicationContext(), mNowPlayingHandler);
 		if (mControlManager != null) {
 			mControlManager.setController(null);
 		}
