@@ -50,7 +50,7 @@ public class UpdateNowPlayingWidgetService extends Service implements Callback {
 			RemoteViews remoteViews = new RemoteViews(this
 					.getApplicationContext().getPackageName(),
 					R.layout.widget_now_playing);
-			Log.w("WidgetExample", String.valueOf(number));
+			Log.w("service", "onStart");
 			// Set the text
 			
 
@@ -88,10 +88,6 @@ public class UpdateNowPlayingWidgetService extends Service implements Callback {
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this
 				.getApplicationContext());
 
-		ComponentName thisWidget = new ComponentName(getApplicationContext(),
-				NowPlayingWidget.class);
-		int[] allWidgetIds2 = appWidgetManager.getAppWidgetIds(thisWidget);
-		
 
 		for (int widgetId : allWidgetIds) {
 			// Create some random data
@@ -103,7 +99,7 @@ public class UpdateNowPlayingWidgetService extends Service implements Callback {
 			
 			// Set the text
 			remoteViews.setTextViewText(R.id.widget_now_playing_artist,
-					currentlyPlaying.getArtist());
+					currentlyPlaying.getArtist()+ " - " + currentlyPlaying.getAlbum());
 			
 			remoteViews.setTextViewText(R.id.widget_now_playing_song,
 					currentlyPlaying.getTitle());

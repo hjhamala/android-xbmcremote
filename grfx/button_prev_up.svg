@@ -15,7 +15,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.3.1 r9886"
-   sodipodi:docname="button_stop_up.svg">
+   sodipodi:docname="button_next_up.svg">
   <defs
      id="defs4">
     <linearGradient
@@ -127,6 +127,50 @@
          offset="1"
          style="stop-color:#ffffff;stop-opacity:1;" />
     </linearGradient>
+    <linearGradient
+       id="linearGradient3830-1-7">
+      <stop
+         style="stop-color:#e9e9e9;stop-opacity:1;"
+         offset="0"
+         id="stop3832-9-4" />
+      <stop
+         style="stop-color:#ffffff;stop-opacity:1;"
+         offset="1"
+         id="stop3834-1-8" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient3830-6-8">
+      <stop
+         style="stop-color:#e9e9e9;stop-opacity:1;"
+         offset="0"
+         id="stop3832-5-6" />
+      <stop
+         style="stop-color:#ffffff;stop-opacity:1;"
+         offset="1"
+         id="stop3834-7-1" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient3830-9-9">
+      <stop
+         style="stop-color:#e9e9e9;stop-opacity:1;"
+         offset="0"
+         id="stop3832-8-4" />
+      <stop
+         style="stop-color:#ffffff;stop-opacity:1;"
+         offset="1"
+         id="stop3834-0-2" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient3830-12">
+      <stop
+         id="stop3832-85"
+         offset="0"
+         style="stop-color:#e9e9e9;stop-opacity:1;" />
+      <stop
+         id="stop3834-52"
+         offset="1"
+         style="stop-color:#ffffff;stop-opacity:1;" />
+    </linearGradient>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -135,9 +179,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="11.2"
-     inkscape:cx="4.408651"
-     inkscape:cy="18.764625"
+     inkscape:zoom="5.6"
+     inkscape:cx="-46.013146"
+     inkscape:cy="20.150108"
      inkscape:document-units="px"
      inkscape:current-layer="layer1-05"
      showgrid="true"
@@ -175,7 +219,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -230,15 +274,39 @@
                id="rect3857"
                style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:2;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none" />
             <g
-               transform="translate(-14.663716,-25.998418)"
+               transform="matrix(-1,0,0,1,10.836284,-25.998463)"
                id="layer1-4"
                inkscape:label="Layer 1">
-              <path
-                 sodipodi:nodetypes="ccccc"
-                 inkscape:connector-curvature="0"
-                 id="path2996"
-                 d="m 0,1030.3622 22,0 0,22 -22,0 z"
-                 style="fill:#ffffff;stroke:#b3b3b3;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+              <g
+                 style="fill:#ff0000"
+                 transform="translate(7.8800824,13.379445)"
+                 inkscape:label="Layer 1"
+                 id="layer1-0-6">
+                <path
+                   style="fill:#ffffff;stroke:#b3b3b3;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+                   d="m -7.8800824,1016.9828 22.2127574,11 -22.2127574,11 z"
+                   id="path2996"
+                   inkscape:connector-curvature="0"
+                   sodipodi:nodetypes="cccc" />
+                <g
+                   style="fill:#ff0000"
+                   inkscape:label="Layer 1"
+                   id="layer1-1-3"
+                   transform="translate(41.528641,4.3923727)" />
+                <g
+                   style="fill:#ffffff"
+                   inkscape:label="Layer 1"
+                   id="layer1-2"
+                   transform="matrix(0.61702132,0,0,0.61110949,12.481619,396.48535)">
+                  <rect
+                     style="fill:#ffffff;fill-opacity:1;stroke:#b3b3b3;stroke-width:0;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none"
+                     id="rect3899-3"
+                     width="10"
+                     height="36"
+                     x="3.9999995"
+                     y="1015.3622" />
+                </g>
+              </g>
             </g>
           </g>
         </g>

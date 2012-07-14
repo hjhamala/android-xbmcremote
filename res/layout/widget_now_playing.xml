@@ -33,15 +33,26 @@
             android:text="Duration"
             android:textAppearance="?android:attr/textAppearanceSmall" />
         
+        
+        
         <ImageButton
-            android:id="@+id/widget_now_playing_button_stop"
+            android:id="@+id/widget_now_playing_button_prev"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentBottom="true"
             android:layout_marginTop="4dp"
-            android:background="@drawable/button_stop" />
+            android:background="@drawable/button_prev" />
 
+        <ImageButton
+            android:id="@+id/widget_now_playing_button_stop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/widget_now_playing_button_prev"
+            android:layout_toRightOf="@+id/widget_now_playing_button_prev"
+            android:layout_marginLeft="4dp"
+            android:background="@drawable/button_stop" />
+        
         <ImageButton
             android:id="@+id/widget_now_playing_button_play"
             android:layout_width="wrap_content"
@@ -50,6 +61,14 @@
             android:layout_toRightOf="@+id/widget_now_playing_button_stop"
             android:layout_marginLeft="4dp"
             android:background="@drawable/button_play" />
-
+		
+		<ImageButton
+            android:id="@+id/widget_now_playing_button_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/widget_now_playing_button_play"
+            android:layout_toRightOf="@+id/widget_now_playing_button_play"
+            android:layout_marginLeft="4dp"
+            android:background="@drawable/button_next" />
 
     </RelativeLayout>

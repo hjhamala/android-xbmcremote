@@ -26,7 +26,7 @@ public class NowPlayingWidget extends AppWidgetProvider {
 	public static final String EXTRA_ITEM = "com.example.android.stackwidget.EXTRA_ITEM";
 	public static final String ACTION_WIDGET_CONTROL = "org.xbmc.android.remote.WIDGET_CONTROL";
 	public static final String URI_SCHEME = "remote_controller_widget";
-	private int count = 0;
+
 
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager,
