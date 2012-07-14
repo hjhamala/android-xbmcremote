@@ -4,9 +4,11 @@ import java.util.Calendar;
 
 import org.xbmc.android.remote.R;
 import org.xbmc.android.remote.business.NowPlayingPollerThread;
+import org.xbmc.android.remote.presentation.controller.AppWidgetRemoteController;
 import org.xbmc.android.util.ConnectionFactory;
 import org.xbmc.api.data.IControlClient.ICurrentlyPlaying;
 import org.xbmc.api.object.Song;
+import org.xbmc.eventclient.ButtonCodes;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -31,11 +33,13 @@ public class UpdateNowPlayingWidgetService extends Service implements Callback {
 	public static final String COMMAND = "org.xbmc.android.remote.StartCommand";
 	public static final String START_SERVICE = "UpdateNowPlayingWidgetService.start_service";
 	public static final String CONNECTION_ERROR = "UpdateNowPlayingWidgetService.connection_error";
+	public static final String ACTION_WIDGET_CONTROL = "org.xbmc.android.remote.WIDGET_CONTROL";
 	private int[] allWidgetIds;
 	final Handler mNowPlayingHandler = new Handler(this);
 	private BroadcastReceiver mReceiver;
 	private boolean running = false;
 	private long last_error_milli_sedonds = -5*1000; 
+	public static final String URI_SCHEME = "remote_controller_widget";
 	
 	@Override
 	public void onStart(Intent intent, int startId) {
@@ -85,6 +89,7 @@ public class UpdateNowPlayingWidgetService extends Service implements Callback {
 					Log.e(LOG, "Wait for five seconds");
 					Intent wakeup_intent = new Intent();
 					 wakeup_intent.setAction(SystemMessageReceiver.COMMAND);
+					 wakeup_intent.putExtra(SystemMessageReceiver.COMMAND, SystemMessageReceiver.WAKEUP);
 					 // In reality, you would want to have a static variable for the request code instead of 192837
 					 PendingIntent sender = PendingIntent.getBroadcast(this.getApplicationContext(), 192837, wakeup_intent, PendingIntent.FLAG_UPDATE_CURRENT);
 					 // Get the AlarmManager service
@@ -143,8 +148,7 @@ public class UpdateNowPlayingWidgetService extends Service implements Callback {
 			
 			remoteViews.setTextViewText(R.id.widget_now_playing_duration, "(" + Song.getDuration(time) + 
 					(duration == 0 ? "unknown" : " / " + Song.getDuration(duration))+")");
-			
-			// Register an onClickListener
+			attachPendingIntents(this.getApplicationContext(), remoteViews, widgetId);
 			appWidgetManager.updateAppWidget(widgetId, remoteViews);
 		}
 
@@ -180,6 +184,29 @@ public class UpdateNowPlayingWidgetService extends Service implements Callback {
 	public IBinder onBind(Intent arg0) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	private void attachPendingIntents(Context context, RemoteViews remoteView,
+			int widgetId) {
+		Log.i(LOG, "AttachinPendingIntents");
+		
+		AppWidgetRemoteController.setupWidgetButton(remoteView,
+				R.id.widget_now_playing_button_prev, context,
+				ButtonCodes.REMOTE_SKIP_MINUS, widgetId, URI_SCHEME,
+				SystemMessageReceiver.COMMAND);
+		AppWidgetRemoteController.setupWidgetButton(remoteView,
+				R.id.widget_now_playing_button_stop, context,
+				ButtonCodes.REMOTE_STOP, widgetId, URI_SCHEME,
+				SystemMessageReceiver.COMMAND);
+		AppWidgetRemoteController.setupWidgetButton(remoteView,
+				R.id.widget_now_playing_button_play, context,
+				ButtonCodes.REMOTE_PLAY, widgetId, URI_SCHEME,
+				SystemMessageReceiver.COMMAND);
+		AppWidgetRemoteController.setupWidgetButton(remoteView,
+				R.id.widget_now_playing_button_next, context,
+				ButtonCodes.REMOTE_SKIP_PLUS, widgetId, URI_SCHEME,
+				SystemMessageReceiver.COMMAND);
+
 	}
 	
 } 

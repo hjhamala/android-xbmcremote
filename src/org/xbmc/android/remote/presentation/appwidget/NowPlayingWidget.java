@@ -67,4 +67,6 @@ public class NowPlayingWidget extends AppWidgetProvider {
 		context.stopService(intent);
 	}
 	
+	
+	
 }

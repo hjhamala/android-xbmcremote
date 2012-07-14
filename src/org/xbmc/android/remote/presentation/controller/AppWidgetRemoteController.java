@@ -2,6 +2,7 @@ package org.xbmc.android.remote.presentation.controller;
 
 import org.xbmc.android.remote.business.Command;
 import org.xbmc.android.remote.presentation.appwidget.RemoteControllerWidget;
+import org.xbmc.android.remote.presentation.appwidget.SystemMessageReceiver;
 import org.xbmc.api.business.INotifiableManager;
 import org.xbmc.api.presentation.INotifiableController;
 
@@ -17,6 +18,7 @@ import android.widget.RemoteViews;
 public class AppWidgetRemoteController extends RemoteController implements
 		INotifiableController {
 	public static final String COMMAND = "remote.controller.widget.command";
+	public static final String LOG = "AppWidgetRemoteController";
 	public static final String ERROR_MESSAGE = "remote.controller.widget.error_message";
 	private static long ERROR_TIME_MILLISEC = 0;
 	private Context context;
@@ -83,5 +85,18 @@ public class AppWidgetRemoteController extends RemoteController implements
 	public void sendButton(String buttonCode){
 		mEventClientManager.sendButton("R1", buttonCode, false, true, false, (short)0, (byte)0);
 	}
+	
+	public static void setupWidgetButton(RemoteViews remoteView, int viewId, Context context, String buttonCode, int widgetId, String uri, String action){
+		Log.i(LOG, "" + viewId);
+        Intent active = new Intent();
+        active.setAction(action);
+        active.putExtra(action, SystemMessageReceiver.BUTTON_COMMAND);
+        active.putExtra(SystemMessageReceiver.BUTTON_COMMAND, buttonCode);
+     // Make this pending intent unique to prevent updating other intents
+        int requestID = (int) System.currentTimeMillis();
+        remoteView.setOnClickPendingIntent(viewId, PendingIntent.getBroadcast(context, requestID, active, PendingIntent.FLAG_UPDATE_CURRENT));
+	}
+	
+	
 	
 }
