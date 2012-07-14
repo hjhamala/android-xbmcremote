@@ -10,11 +10,20 @@ public class SystemMessageReceiver extends BroadcastReceiver {
     // thanks Jason
     public static boolean wasScreenOn = true;
     public static final String LOG = "SystemMessageReceiver";
+    public static final String COMMAND = "org.xbmc.android.remote.StartCommand";
     
     
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
+    	Log.i(LOG, "onReceive");
+    	if (intent.getAction().equals(COMMAND)){
+    		Log.i(LOG, "got alarm");
+    		Intent intent1 = new Intent(context,
+    				UpdateNowPlayingWidgetService.class);
+            intent1.putExtra(UpdateNowPlayingWidgetService.COMMAND, UpdateNowPlayingWidgetService.START_SERVICE);
+            context.startService(intent1);
+    	}
+    	if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
             // do whatever you need to do here
             wasScreenOn = false;
             Log.i(LOG, "Screen off");
