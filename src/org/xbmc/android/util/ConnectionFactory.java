@@ -26,6 +26,8 @@ import org.xbmc.android.remote.business.NowPlayingPollerThread;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Handler;
+import android.util.Log;
 
 /**
  * Globally returns the control objects. 
@@ -36,7 +38,7 @@ import android.net.NetworkInfo;
 public class ConnectionFactory {
 	
 //	private static Collection<ServiceInfo> sServiceInfo = new HashSet<ServiceInfo>();
-	private static NowPlayingPollerThread sNowPlayingPoller;
+	private static volatile NowPlayingPollerThread sNowPlayingPoller;
 	
 	/**
 	 * Performs zeroconf lookup for the hostname and XBMC's services.
@@ -106,26 +108,64 @@ public class ConnectionFactory {
 		sServiceInfo.add(hostInfo);
 		return hostInfo;
 	}*/
-	
+		
 	/**
 	 * Returns an instance of the NowPlaying Poller . Instantiation takes place only
-	 * once, otherwise the first instance is returned.
+	 * once, otherwise the first instance is returned. 
+	 * 
+	 * Doesnt start the thread
 	 * 
 	 * @param context
+	 * @param mNowPlayingHandler handler which is going to be registered
 	 * @return A reference to the NowPlaying Poller
 	 */
-	public static NowPlayingPollerThread getNowPlayingPoller(Context context) {
+	
+	public static synchronized NowPlayingPollerThread getNowPlayingPoller(Context context) {
 		if (sNowPlayingPoller == null) {
 			sNowPlayingPoller = new NowPlayingPollerThread(context);
-			sNowPlayingPoller.start();
+			Log.i("ConnectionFactory", "Creating NowPlayingPollerThread");
+		} else {
+			Log.i("ConnectionFactory", "Allready started");
 		}
 		if (!sNowPlayingPoller.isAlive()){
+			Log.i("ConnectionFactory", "Not Alive Starting again");
 			sNowPlayingPoller = new NowPlayingPollerThread(context);
-			sNowPlayingPoller.start();			
 		}
+		
 		return sNowPlayingPoller;
+		
 	}
 	
+	public static synchronized NowPlayingPollerThread subscribeNowPlayingPollerThread(Context context,
+			Handler mNowPlayingHandler) {
+		
+		if (sNowPlayingPoller == null) {
+			sNowPlayingPoller = new NowPlayingPollerThread(context);
+			sNowPlayingPoller.subscribe(mNowPlayingHandler);
+			sNowPlayingPoller.start();
+			Log.i("ConnectionFactory", "Starting NowPlayingPollerThread");
+		} else {
+			Log.i("ConnectionFactory", "Allready started");
+		}
+		if (!sNowPlayingPoller.isAlive()){
+			Log.i("ConnectionFactory", "Not Alive Starting again");
+			sNowPlayingPoller = new NowPlayingPollerThread(context);
+			sNowPlayingPoller.subscribe(mNowPlayingHandler);
+			sNowPlayingPoller.start();			
+		}
+		
+		return sNowPlayingPoller;
+				
+	}
+	
+	public static synchronized NowPlayingPollerThread unSubscribeNowPlayingPollerThread(Context context,
+			Handler mNowPlayingHandler, boolean stop) {
+		if (sNowPlayingPoller != null){
+			sNowPlayingPoller.unSubscribe(mNowPlayingHandler);		
+			}
+		return sNowPlayingPoller;
+		
+	}
 	
 	/**
 	 * Checks whether the device is able to connect to the network
@@ -137,4 +177,7 @@ public class ConnectionFactory {
 		NetworkInfo info = connMgr.getActiveNetworkInfo();
 		return info != null && info.isConnected();
 	}
+
+
+	
 }

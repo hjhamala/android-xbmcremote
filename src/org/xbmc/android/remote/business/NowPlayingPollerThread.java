@@ -26,6 +26,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.HashSet;
 
+import org.xbmc.android.remote.presentation.appwidget.UpdateNowPlayingWidgetService;
 import org.xbmc.android.util.ClientFactory;
 import org.xbmc.android.util.HostFactory;
 import org.xbmc.api.business.DataResponse;
@@ -39,6 +40,7 @@ import org.xbmc.httpapi.Connection;
 import org.xbmc.httpapi.WifiStateException;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -89,16 +91,25 @@ public class NowPlayingPollerThread extends Thread {
 	
 	public NowPlayingPollerThread(final Context context){
   	  	mManagerStub = new INotifiableManager() {
-			public void onMessage(int code, String message) { }
+			
+  	  		public void onMessage(int code, String message) { }
+			
 			public void onMessage(String message) { }
+			
 			public void onError(Exception e) {
 				// XXX link to context will eventually change if activity which created the thread changes (java.lang.RuntimeException: Can't create handler inside thread that has not called Looper.prepare())
 				//Toast toast = Toast.makeText(context, "Poller Error: " + e.getMessage(), Toast.LENGTH_LONG);
 				//toast.show();
 				if (e.getMessage() != null) {
-					Log.e(TAG, e.getMessage());
+					Log.e(TAG, "No message");
+					//Log.e(TAG, e.getMessage());
+					// Send intent to widget updater service about connection error
+					 Intent intent = new Intent(context,
+			    	 UpdateNowPlayingWidgetService.class);
+					 intent.putExtra(UpdateNowPlayingWidgetService.COMMAND, UpdateNowPlayingWidgetService.CONNECTION_ERROR);
+			         context.startService(intent);
 				}
-				e.printStackTrace();
+				// e.printStackTrace();
 			}
 			public void onFinish(DataResponse<?> response) {
 			}
@@ -126,11 +137,14 @@ public class NowPlayingPollerThread extends Thread {
 		sendSingleMessage(handler, MESSAGE_PROGRESS_CHANGED, currPlaying);
 		sendSingleMessage(handler, MESSAGE_PLAYLIST_ITEM_CHANGED, currPlaying);
 		sendSingleMessage(handler, MESSAGE_COVER_CHANGED, currPlaying);
+		Log.i(TAG, "Registered handler");
 		
 		mSubscribers.add(handler);
+		Log.i(TAG, "Subscribers" + mSubscribers.size());
 	}
 	
 	public synchronized void unSubscribe(Handler handler){
+		Log.i(TAG, "UnRegistered handler");
 		mSubscribers.remove(handler);
 	}
 	
@@ -166,20 +180,26 @@ public class NowPlayingPollerThread extends Thread {
 	public void run() {
 		String lastPos = "-1";
 		int lastPlayStatus = PlayStatus.UNKNOWN;
+		
 		int currentPlayStatus = PlayStatus.UNKNOWN;
 		int currentMediaType = 0;
 		IControlClient control = mControl; // use local reference for faster access
 		HashSet<Handler> subscribers = mSubscribers;
+		// If subscribers are empty there is no need to run
+		
+		Log.i(TAG, "Thread-id: " + this.getId());
 		while (!isInterrupted() ) {
 			if (subscribers.size() > 0){
-/*				if (!control.isConnected()) {
+				Log.i(TAG, "Subscribers: " + subscribers.size());
+				/*				
+				 * if (!control.isConnected()) {
 					sendEmptyMessage(MESSAGE_CONNECTION_ERROR);
 				} else {*/
 					ICurrentlyPlaying currPlaying;
 					try{
 						 currPlaying = control.getCurrentlyPlaying(mManagerStub);
 					} catch(Exception e) {
-						e.printStackTrace();
+						// e.printStackTrace();
 						sendEmptyMessage(MESSAGE_CONNECTION_ERROR);
 						return;
 					}
@@ -250,16 +270,25 @@ public class NowPlayingPollerThread extends Thread {
 			  	  			Log.e(TAG, Log.getStackTraceString(e));
 			  	  		}
 					}
+				} else {
+					Log.i(TAG, "No listeners");
+					Log.i(TAG, "Subscribers: " + subscribers.size());
+					// No need to continue thread running, if empty
+					this.interrupt();
 				}
 //			}
 			try {
+				
+				Log.i(TAG, "Sleeping");
 				sleep(1000);
 			} catch (InterruptedException e) {
+				Log.i(TAG, "Interrupting");
 				sendEmptyMessage(MESSAGE_RECONFIGURE);
 				return;
 			}
 			lastPlayStatus = currentPlayStatus;
 		}
+		
 	}
 	
 	private byte[] download(String pathToDownload) throws IOException, URISyntaxException {
