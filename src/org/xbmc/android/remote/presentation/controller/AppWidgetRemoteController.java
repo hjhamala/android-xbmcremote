@@ -3,6 +3,7 @@ package org.xbmc.android.remote.presentation.controller;
 import org.xbmc.android.remote.business.Command;
 import org.xbmc.android.remote.presentation.appwidget.RemoteControllerWidget;
 import org.xbmc.android.remote.presentation.appwidget.SystemMessageReceiver;
+import org.xbmc.android.remote.presentation.appwidget.UpdateNowPlayingWidgetService;
 import org.xbmc.api.business.INotifiableManager;
 import org.xbmc.api.presentation.INotifiableController;
 
@@ -86,15 +87,14 @@ public class AppWidgetRemoteController extends RemoteController implements
 		mEventClientManager.sendButton("R1", buttonCode, false, true, false, (short)0, (byte)0);
 	}
 	
-	public static void setupWidgetButton(RemoteViews remoteView, int viewId, Context context, String buttonCode, int widgetId, String uri, String action){
-		Log.i(LOG, "" + viewId);
-        Intent active = new Intent();
-        active.setAction(action);
-        active.putExtra(action, SystemMessageReceiver.BUTTON_COMMAND);
-        active.putExtra(SystemMessageReceiver.BUTTON_COMMAND, buttonCode);
+	public static void setupWidgetButtonforService(RemoteViews remoteView, Context context, int viewId, Object serviceObject, String buttonCode,String extra_key, int extra_value){
+		
+        Intent active = new Intent(context, serviceObject.getClass());        
+        active.putExtra(extra_key, extra_value);
+        active.putExtra("" + extra_value, buttonCode);
      // Make this pending intent unique to prevent updating other intents
         int requestID = (int) System.currentTimeMillis();
-        remoteView.setOnClickPendingIntent(viewId, PendingIntent.getBroadcast(context, requestID, active, PendingIntent.FLAG_UPDATE_CURRENT));
+        remoteView.setOnClickPendingIntent(viewId, PendingIntent.getService(context, requestID, active, PendingIntent.FLAG_UPDATE_CURRENT));
 	}
 	
 	

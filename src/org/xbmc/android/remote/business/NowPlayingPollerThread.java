@@ -102,12 +102,15 @@ public class NowPlayingPollerThread extends Thread {
 				//toast.show();
 				if (e.getMessage() != null) {
 					Log.e(TAG, "No message");
-					//Log.e(TAG, e.getMessage());
+					
+					Log.e(TAG, e.getMessage());
+					// Notify subscribers about error
+					sendEmptyMessage(MESSAGE_CONNECTION_ERROR);
 					// Send intent to widget updater service about connection error
-					 Intent intent = new Intent(context,
-			    	 UpdateNowPlayingWidgetService.class);
-					 intent.putExtra(UpdateNowPlayingWidgetService.COMMAND, UpdateNowPlayingWidgetService.CONNECTION_ERROR);
-			         context.startService(intent);
+					// Intent intent = new Intent(context,
+			    	// UpdateNowPlayingWidgetService.class);
+					// intent.putExtra(UpdateNowPlayingWidgetService.COMMAND, UpdateNowPlayingWidgetService.CONNECTION_ERROR);
+			        // context.startService(intent);
 				}
 				// e.printStackTrace();
 			}
@@ -172,9 +175,11 @@ public class NowPlayingPollerThread extends Thread {
 
 	public synchronized void sendEmptyMessage(int what) {
 		HashSet<Handler> subscribers = mSubscribers;
-		for (Handler handler : subscribers) {
-			handler.sendEmptyMessage(what);
-		}	
+		if (subscribers != null){
+			for (Handler handler : subscribers) {
+				handler.sendEmptyMessage(what);
+			}	
+		}
 	}
 	
 	public void run() {
@@ -200,6 +205,7 @@ public class NowPlayingPollerThread extends Thread {
 						 currPlaying = control.getCurrentlyPlaying(mManagerStub);
 					} catch(Exception e) {
 						// e.printStackTrace();
+						// this doesnt work,  error goes to this methods onError
 						sendEmptyMessage(MESSAGE_CONNECTION_ERROR);
 						return;
 					}
@@ -273,7 +279,7 @@ public class NowPlayingPollerThread extends Thread {
 				} else {
 					Log.i(TAG, "No listeners");
 					Log.i(TAG, "Subscribers: " + subscribers.size());
-					// No need to continue thread running, if empty
+					// No need to keep thread running, if empty
 					this.interrupt();
 				}
 //			}

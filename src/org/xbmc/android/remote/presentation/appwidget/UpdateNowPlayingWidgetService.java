@@ -1,11 +1,10 @@
 package org.xbmc.android.remote.presentation.appwidget;
 
-import java.util.Calendar;
-
 import org.xbmc.android.remote.R;
 import org.xbmc.android.remote.business.NowPlayingPollerThread;
 import org.xbmc.android.remote.presentation.controller.AppWidgetRemoteController;
 import org.xbmc.android.util.ConnectionFactory;
+import org.xbmc.android.util.HostFactory;
 import org.xbmc.api.data.IControlClient.ICurrentlyPlaying;
 import org.xbmc.api.object.Song;
 import org.xbmc.eventclient.ButtonCodes;
@@ -31,22 +30,76 @@ import android.widget.RemoteViews;
 public class UpdateNowPlayingWidgetService extends Service implements Callback {
 	private static final String LOG = "UpdateNowPlayingWidgetService";
 	public static final String COMMAND = "org.xbmc.android.remote.StartCommand";
-	public static final String START_SERVICE = "UpdateNowPlayingWidgetService.start_service";
-	public static final String CONNECTION_ERROR = "UpdateNowPlayingWidgetService.connection_error";
-	public static final String ACTION_WIDGET_CONTROL = "org.xbmc.android.remote.WIDGET_CONTROL";
+	public static final int START_SERVICE = 1;
+	public static final int STOP_POLLING = 2;
+	public static final int START_AFTER_SLEEP = 3;
+	public static final int SEND_BUTTON = 4;
+	
+	public static final String URI_SCHEME = "remote_controller_widget";
+	
 	private int[] allWidgetIds;
 	final Handler mNowPlayingHandler = new Handler(this);
 	private BroadcastReceiver mReceiver;
-	private boolean running = false;
-	private long last_error_milli_sedonds = -5*1000; 
-	public static final String URI_SCHEME = "remote_controller_widget";
+
+	/** Number of errors in row */
+	private int error_count = 0;
+	/** How many times try again */
+	private final int ERROR_RETRIES = 3;
+	private final long  SLEEP_TIME = 10000;
+	/** Timestamp for last error */
+	private long last_error_milli_seconds = -SLEEP_TIME;
+	
+	private AppWidgetRemoteController mAppWidgetRemoteController;
 	
 	@Override
 	public void onStart(Intent intent, int startId) {
-		Log.i(LOG, "Starting");
+		// Log.i(LOG, "Starting");
+
+		// Register system listener. Screen status intent filtering cannot be
+		// done in the android manifest
+		registerSystemListener();
 		
-		// Register system listener. This cannot be done in the android manifest
-		if (mReceiver == null){
+		// Setup AppWidgetRemoteController
+		setupAppWidgetRemoteController();
+		
+		Log.i(LOG, "OnStart");
+		Bundle extras = intent.getExtras();
+
+		if (extras != null && extras.containsKey(COMMAND)) {
+			switch (extras.getInt(COMMAND)) {
+			case START_SERVICE:
+					error_count = 0;
+					subscribeNowPlayingPoller();
+				break;
+			case START_AFTER_SLEEP:
+					subscribeNowPlayingPoller();
+				break;
+			case STOP_POLLING:
+				unSubscribeNowPlayingPoller();
+				break;
+			case SEND_BUTTON:
+				Log.i(LOG, "" + extras.getString("" + SEND_BUTTON));
+				error_count = 0;
+				mAppWidgetRemoteController.sendButton(extras.getString("" + SEND_BUTTON));
+				subscribeNowPlayingPoller();
+				break;
+			}
+		}
+		super.onStart(intent, startId);
+	}
+
+	private void setupAppWidgetRemoteController() {
+		if (mAppWidgetRemoteController == null){
+			// If the app is not initialized this should cause it to try connect to
+			// the latest host and we also avoid noSettings exception
+			HostFactory.readHost(getApplicationContext());
+			mAppWidgetRemoteController = new AppWidgetRemoteController(getApplicationContext());
+			
+		}
+	}
+
+	private void registerSystemListener() {
+		if (mReceiver == null) {
 			Log.i(LOG, "Register Listener");
 			IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
 			filter.addAction(Intent.ACTION_SCREEN_OFF);
@@ -54,159 +107,163 @@ public class UpdateNowPlayingWidgetService extends Service implements Callback {
 			mReceiver = new SystemMessageReceiver();
 			registerReceiver(mReceiver, filter);
 		}
-		
-		if (!running){
-			Log.i(LOG, "Not running");
-			subscribePoller();
-			running = true;
-		}
-		
-		Log.i(LOG, "OnStart");
-		 
-		Bundle extras = intent.getExtras();
-		if (extras == null){
-			Log.i(LOG, "Null extras");
-		}
-		if (extras != null && extras.containsKey(COMMAND)){
-			Log.i(LOG, "got command");
-			
-			String command = extras.getString(COMMAND);
-			
-			if (command.equals(Intent.ACTION_SCREEN_OFF)){
-				// Log.i(LOG, extras.getString(COMMAND));
-				Log.i(LOG, "Screen off");
-				unSubscribePoller();
-			} else if (command.equals(Intent.ACTION_SCREEN_ON)){
-				subscribePoller();
-			} else if (command.equals(START_SERVICE)){
-				Log.i(LOG, "got start intent");
-				subscribePoller();
-			} else if (command.equals(CONNECTION_ERROR)){
-				Log.e(LOG, "Connection error");
-				// Lets wait for 10 seconds and try again
-				if (last_error_milli_sedonds < SystemClock.elapsedRealtime() - 10 * 1000){
-					unSubscribePoller();
-					Log.e(LOG, "Wait for five seconds");
-					Intent wakeup_intent = new Intent();
-					 wakeup_intent.setAction(SystemMessageReceiver.COMMAND);
-					 wakeup_intent.putExtra(SystemMessageReceiver.COMMAND, SystemMessageReceiver.WAKEUP);
-					 // In reality, you would want to have a static variable for the request code instead of 192837
-					 PendingIntent sender = PendingIntent.getBroadcast(this.getApplicationContext(), 192837, wakeup_intent, PendingIntent.FLAG_UPDATE_CURRENT);
-					 // Get the AlarmManager service
-					 AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
-					 am.set(AlarmManager.RTC, System.currentTimeMillis()+10000, sender);
-					 
-					 last_error_milli_sedonds = SystemClock.elapsedRealtime();
-				} else {
-					Log.e(LOG, "Error in last five seconds");
-				}
-				
-			}
-		}
-		super.onStart(intent, startId);
-
 	}
 
+	/**
+	 * Makes service sleep and registers alarm manager to wake up service
+	 */
+	private void sleepService() {
+		if (last_error_milli_seconds < SystemClock.elapsedRealtime() - SLEEP_TIME) {
+			unSubscribeNowPlayingPoller();
+			if (error_count < ERROR_RETRIES){
+				Log.e(LOG, "Wait for 10 seconds");
+				Intent wakeup_intent = new Intent(this.getApplicationContext(), UpdateNowPlayingWidgetService.class);				
+				wakeup_intent.putExtra(UpdateNowPlayingWidgetService.COMMAND,
+						UpdateNowPlayingWidgetService.START_AFTER_SLEEP);
+				PendingIntent sender = PendingIntent.getService(getApplicationContext(), 0, wakeup_intent, PendingIntent.FLAG_UPDATE_CURRENT);
+				// Get the AlarmManager service
+				AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+				am.set(AlarmManager.RTC, System.currentTimeMillis() + SLEEP_TIME , sender);
+			} else {
+				// Too many errors, user need to manually start the widget again
+				Log.e(LOG, "Too many errors");
+				return;
+			}
+			last_error_milli_seconds = SystemClock.elapsedRealtime();
+			error_count++;
+		} else {
+			Log.e(LOG, "We are most propably sleeping all ready");
+		}
+	}
 
 	public boolean handleMessage(Message msg) {
-		// TODO Auto-generated method stub
-		final Bundle data = msg.getData();
-		final ICurrentlyPlaying currentlyPlaying = (ICurrentlyPlaying)data.getSerializable(NowPlayingPollerThread.BUNDLE_CURRENTLY_PLAYING);
-		Log.i("handle", "" + msg.what);
-		if (msg.what == NowPlayingPollerThread.MESSAGE_PROGRESS_CHANGED ){
-			updateWidgets(allWidgetIds, currentlyPlaying);
-		}
 		
+		final Bundle data = msg.getData();
+		final ICurrentlyPlaying currentlyPlaying = (ICurrentlyPlaying) data
+				.getSerializable(NowPlayingPollerThread.BUNDLE_CURRENTLY_PLAYING);
+		Log.i("handle", "" + msg.what);
+
+		switch (msg.what) {
+		case NowPlayingPollerThread.MESSAGE_CONNECTION_ERROR:
+		case NowPlayingPollerThread.MESSAGE_RECONFIGURE:
+			sleepService();
+			break;
+		case NowPlayingPollerThread.MESSAGE_PROGRESS_CHANGED:
+		case NowPlayingPollerThread.MESSAGE_COVER_CHANGED:
+		case NowPlayingPollerThread.MESSAGE_PLAYSTATE_CHANGED:
+			updateWidgets(allWidgetIds, currentlyPlaying);
+			break;
+		}
 		return true;
 	}
-	
-	public void updateWidgets(int[] allWidgetIds, ICurrentlyPlaying currentlyPlaying){
-		
+
+	/**
+	 * Update all the widgets
+	 * 
+	 * @param allWidgetIds
+	 * @param currentlyPlaying
+	 */
+	public void updateWidgets(int[] allWidgetIds,
+			ICurrentlyPlaying currentlyPlaying) {
+
 		Log.i(LOG, "Updating widgets");
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this
 				.getApplicationContext());
 		ComponentName thisWidget = new ComponentName(getApplicationContext(),
 				NowPlayingWidget.class);
 		allWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
-		
+
 		for (int widgetId : allWidgetIds) {
-			// Create some random data
-			
 
 			RemoteViews remoteViews = new RemoteViews(this
 					.getApplicationContext().getPackageName(),
 					R.layout.widget_now_playing);
-			
-			// Set the text
-			remoteViews.setTextViewText(R.id.widget_now_playing_artist,
-					currentlyPlaying.getArtist()+ " - " + currentlyPlaying.getAlbum());
-			
+
+			remoteViews.setTextViewText(
+					R.id.widget_now_playing_artist,
+					currentlyPlaying.getArtist() + " - "
+							+ currentlyPlaying.getAlbum());
 			remoteViews.setTextViewText(R.id.widget_now_playing_song,
 					currentlyPlaying.getTitle());
+
 			int duration = currentlyPlaying.getDuration();
 			int time = currentlyPlaying.getTime();
-			
-			remoteViews.setTextViewText(R.id.widget_now_playing_duration, "(" + Song.getDuration(time) + 
-					(duration == 0 ? "unknown" : " / " + Song.getDuration(duration))+")");
-			attachPendingIntents(this.getApplicationContext(), remoteViews, widgetId);
+
+			remoteViews.setTextViewText(
+					R.id.widget_now_playing_duration,
+					"("
+							+ Song.getDuration(time)
+							+ (duration == 0 ? "unknown" : " / "
+									+ Song.getDuration(duration)) + ")");
+
+			attachPendingIntents(this.getApplicationContext(), remoteViews,
+					widgetId);
+
 			appWidgetManager.updateAppWidget(widgetId, remoteViews);
 		}
 
 	}
-		
-		
-	 @Override
-	    public void onDestroy() {
-	        // Cancel nowplaying polling
-		 	Log.i(LOG, "onDestroy");
-		 	unregisterReceiver(mReceiver);
-		 	unSubscribePoller();
-	    }
 
-	public void subscribePoller(){
+	@Override
+	public void onDestroy() {
+		// Cancel nowplaying polling
+		Log.i(LOG, "onDestroy");
+		unregisterReceiver(mReceiver);
+		unSubscribeNowPlayingPoller();
+	}
+
+	public void subscribeNowPlayingPoller() {
 		Log.i(LOG, "Subscriping");
 		final Context context = this.getApplicationContext();
 		new Thread("nowplaying-spawning") {
 			@Override
 			public void run() {
-				ConnectionFactory.subscribeNowPlayingPollerThread(context, mNowPlayingHandler);
+				ConnectionFactory.subscribeNowPlayingPollerThread(context,
+						mNowPlayingHandler);
 			}
 		}.start();
 	}
-	 
-	public void unSubscribePoller(){
+
+	public void unSubscribeNowPlayingPoller() {
 		Log.i(LOG, "UnSubscriping");
-		
-		ConnectionFactory.unSubscribeNowPlayingPollerThread(this.getApplicationContext(), mNowPlayingHandler);
-		
+
+		ConnectionFactory.unSubscribeNowPlayingPollerThread(
+				this.getApplicationContext(), mNowPlayingHandler);
+
 	}
+
 	@Override
 	public IBinder onBind(Intent arg0) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
+	/**
+	 * Attaches pending intents to view
+	 * 
+	 * @param context
+	 * @param remoteView
+	 * @param widgetId
+	 */
 	private void attachPendingIntents(Context context, RemoteViews remoteView,
 			int widgetId) {
 		Log.i(LOG, "AttachinPendingIntents");
+
+		AppWidgetRemoteController.setupWidgetButtonforService(remoteView,context,R.id.widget_now_playing_button_prev,this,
+				ButtonCodes.REMOTE_SKIP_MINUS, COMMAND, SEND_BUTTON);
+				
+		AppWidgetRemoteController.setupWidgetButtonforService(remoteView,
+				context, R.id.widget_now_playing_button_stop,this,
+				ButtonCodes.REMOTE_STOP, COMMAND, SEND_BUTTON);
 		
-		AppWidgetRemoteController.setupWidgetButton(remoteView,
-				R.id.widget_now_playing_button_prev, context,
-				ButtonCodes.REMOTE_SKIP_MINUS, widgetId, URI_SCHEME,
-				SystemMessageReceiver.COMMAND);
-		AppWidgetRemoteController.setupWidgetButton(remoteView,
-				R.id.widget_now_playing_button_stop, context,
-				ButtonCodes.REMOTE_STOP, widgetId, URI_SCHEME,
-				SystemMessageReceiver.COMMAND);
-		AppWidgetRemoteController.setupWidgetButton(remoteView,
-				R.id.widget_now_playing_button_play, context,
-				ButtonCodes.REMOTE_PLAY, widgetId, URI_SCHEME,
-				SystemMessageReceiver.COMMAND);
-		AppWidgetRemoteController.setupWidgetButton(remoteView,
-				R.id.widget_now_playing_button_next, context,
-				ButtonCodes.REMOTE_SKIP_PLUS, widgetId, URI_SCHEME,
-				SystemMessageReceiver.COMMAND);
+		AppWidgetRemoteController.setupWidgetButtonforService(remoteView,context,
+				R.id.widget_now_playing_button_play, this,
+				ButtonCodes.REMOTE_PLAY, COMMAND, SEND_BUTTON);
+		
+		AppWidgetRemoteController.setupWidgetButtonforService(remoteView,context,
+				R.id.widget_now_playing_button_next,this,
+				ButtonCodes.REMOTE_SKIP_PLUS, COMMAND, SEND_BUTTON);
 
 	}
-	
-} 
+
+}
