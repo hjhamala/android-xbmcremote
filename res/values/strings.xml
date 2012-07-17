@@ -30,6 +30,7 @@ If you are connecting through 3G please make sure that UDP port 9777 is forwarde
 
 Have fun.</string>
     <string name="app_name">XBMC Remote</string>
+    <string name="xbmc_now_playing">XBMC Now Playing</string>
 	<string name="app_receiver">XbmcBroadcastReceiver</string>
 	<string name="sms_received">SMS received</string>
 	<string name="alphabet">\u0020ABCDEFGHIJKLMNOPQRSTUVWXYZ</string>

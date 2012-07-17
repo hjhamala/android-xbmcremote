@@ -23,6 +23,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Handler.Callback;
@@ -233,9 +234,12 @@ public class UpdateNowPlayingWidgetService extends Service implements Callback {
 					.getApplicationContext().getPackageName(),
 					R.layout.widget_now_playing);
 
+			attachPendingIntents(this.getApplicationContext(), remoteViews);
+			
 			switch (currentlyPlaying.getPlayStatus()) {
-			case PlayStatus.PLAYING:
 			case PlayStatus.PAUSED:
+				// Change play button graphic to pause graphics
+				remoteViews.setImageViewResource(R.id.widget_now_playing_button_play, R.drawable.button_paused);
 				remoteViews.setTextViewText(R.id.widget_now_playing_artist,
 						currentlyPlaying.getArtist());
 				remoteViews.setTextViewText(R.id.widget_now_playing_title,
@@ -245,6 +249,25 @@ public class UpdateNowPlayingWidgetService extends Service implements Callback {
 
 				int duration = currentlyPlaying.getDuration();
 				int time = currentlyPlaying.getTime();
+
+				remoteViews.setTextViewText(
+						R.id.widget_now_playing_duration,
+						"("
+								+ Song.getDuration(time)
+								+ (duration == 0 ? "unknown" : " / "
+										+ Song.getDuration(duration)) + ")");
+				break;
+			case PlayStatus.PLAYING:
+				remoteViews.setImageViewResource(R.id.widget_now_playing_button_play, R.drawable.button_play);
+				remoteViews.setTextViewText(R.id.widget_now_playing_artist,
+						currentlyPlaying.getArtist());
+				remoteViews.setTextViewText(R.id.widget_now_playing_title,
+						currentlyPlaying.getAlbum());
+				remoteViews.setTextViewText(R.id.widget_now_playing_song,
+						currentlyPlaying.getTitle());
+
+				duration = currentlyPlaying.getDuration();
+				time = currentlyPlaying.getTime();
 
 				remoteViews.setTextViewText(
 						R.id.widget_now_playing_duration,
@@ -266,7 +289,7 @@ public class UpdateNowPlayingWidgetService extends Service implements Callback {
 				break;
 			}
 
-			attachPendingIntents(this.getApplicationContext(), remoteViews);
+			
 
 			appWidgetManager.updateAppWidget(widgetId, remoteViews);
 		}
