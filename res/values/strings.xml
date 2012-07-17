@@ -42,12 +42,14 @@ Have fun.</string>
 	<string name="ok">OK</string>
 	<string name="yes">Yes</string>
 	<string name="no">No</string>
+	<string name="music">Music</string>
+	<string name="movies">Movies</string>
+	<string name="tv_shows">TV Shows</string>
+	<string name="error">Error</string>
+	<string name="nothing_playing">Nothing playing</string>
+	<string name="click_here_to_retry_connection">Click here to retry connection</string>
 	<string name="host_scan_error">There was an error while scanning a new host. Please verify that you are scanning a valid barcode.</string>
 	<string name="added_host">Successfully added \"%s\"</string>
 	<string name="barcode_scanner_required">You need to install the Barcode Scanner app to use this feature. Would you like to install it now?</string>
 	<string name="make_sure_XBMC_webserver_is_enabled_and_XBMC_is_running">Make sure XBMC webserver is enabled and XBMC is running</string>
-	<string name="music">Music</string>
-	<string name="movies">Movies</string>
-	<string name="tv_shows">TV Shows</string>
-	<string name="pictures">Pictures</string>
 </resources>

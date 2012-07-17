@@ -12,27 +12,29 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:text="Artist"
+            android:layout_marginLeft="4dp"
             android:textAppearance="?android:attr/textAppearanceMedium" />
-
+		
         <TextView
-            android:id="@+id/widget_now_playing_song"
+            android:id="@+id/widget_now_playing_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_below="@+id/widget_now_playing_artist"
             android:layout_marginTop="4dp"
-            android:text="Song"
+            android:text="Title"
+            android:layout_marginLeft="4dp"
             android:textAppearance="?android:attr/textAppearanceSmall" />
-
+        
         <TextView
-            android:id="@+id/widget_now_playing_duration"
+            android:id="@+id/widget_now_playing_song"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/widget_now_playing_artist"
-            android:layout_marginLeft="4dp"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/widget_now_playing_title"
             android:layout_marginTop="4dp"
-            android:layout_toRightOf="@+id/widget_now_playing_song"
-            android:text="Duration"
+            android:layout_marginLeft="4dp"
+            android:text="Song"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <LinearLayout
@@ -40,7 +42,8 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:gravity="center_horizontal" >
+            android:gravity="center_horizontal" 
+            android:layout_marginBottom="4dp">
 
             <ImageButton
                 android:id="@+id/widget_now_playing_button_prev"
@@ -75,7 +78,7 @@
             android:layout_height="wrap_content"
             android:layout_above="@+id/widget_now_playing_linear_layout_buttons"
             
-            android:layout_marginBottom="15dp" 
+            android:layout_marginBottom="8dp" 
             android:gravity="center_horizontal" >
 
             <Button
@@ -104,5 +107,14 @@
                 android:background="@drawable/button_empty"
                 android:text="@string/tv_shows" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/widget_now_playing_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/widget_now_playing_song"
+            android:layout_below="@+id/widget_now_playing_song"
+            android:text="Duration"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
 
     </RelativeLayout>
