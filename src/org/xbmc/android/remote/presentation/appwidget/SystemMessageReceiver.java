@@ -39,7 +39,7 @@ public class SystemMessageReceiver extends BroadcastReceiver {
             Log.i(LOG, "Screen on");
             Intent intent1 = new Intent(context,
     				UpdateNowPlayingWidgetService.class);
-            intent1.putExtra(UpdateNowPlayingWidgetService.COMMAND, UpdateNowPlayingWidgetService.START_SERVICE);
+            intent1.putExtra(UpdateNowPlayingWidgetService.COMMAND, UpdateNowPlayingWidgetService.START_POLLING);
             context.startService(intent1);
         }
     }

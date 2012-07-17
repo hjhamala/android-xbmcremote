@@ -46,7 +46,7 @@ public class NowPlayingWidget extends AppWidgetProvider {
 		Intent intent = new Intent(context.getApplicationContext(),
 				UpdateNowPlayingWidgetService.class);
 		// intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, allWidgetIds);
-		intent.putExtra(UpdateNowPlayingWidgetService.COMMAND, UpdateNowPlayingWidgetService.START_SERVICE);
+		intent.putExtra(UpdateNowPlayingWidgetService.COMMAND, UpdateNowPlayingWidgetService.START_POLLING);
 		
 		context.startService(intent);
 	}

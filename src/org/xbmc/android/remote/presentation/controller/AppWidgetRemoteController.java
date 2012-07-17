@@ -97,8 +97,8 @@ public class AppWidgetRemoteController extends RemoteController implements
         active.putExtra(extra_key, extra_value);
         active.putExtra("" + extra_value, buttonCode);
      // Make this pending intent unique to prevent updating other intents
-        int requestID = (int) System.currentTimeMillis();
-        remoteView.setOnClickPendingIntent(viewId, PendingIntent.getService(context, requestID, active, PendingIntent.FLAG_UPDATE_CURRENT));
+        
+        remoteView.setOnClickPendingIntent(viewId, PendingIntent.getService(context, viewId, active, PendingIntent.FLAG_UPDATE_CURRENT));
 	}
 
 	public static void setupWidgetButtonforActivity(RemoteViews remoteView,
@@ -107,8 +107,16 @@ public class AppWidgetRemoteController extends RemoteController implements
 
 		Intent active = new Intent(context, class1);        
 	    // Make this pending intent unique to prevent updating other intents
-		int requestID = (int) System.currentTimeMillis();
-        remoteView.setOnClickPendingIntent(view_id, PendingIntent.getActivity(context, requestID, active, PendingIntent.FLAG_UPDATE_CURRENT));
+		
+        remoteView.setOnClickPendingIntent(view_id, PendingIntent.getActivity(context, view_id, active, PendingIntent.FLAG_UPDATE_CURRENT));
+	}
+
+	public static void removeWidgetButtonForService(RemoteViews remoteView, Context context, int view_id, Object serviceObject, String buttonCode,String extra_key, int extra_value) {
+		Intent active = new Intent(context, serviceObject.getClass());        
+        active.putExtra(extra_key, extra_value);
+        active.putExtra("" + extra_value, buttonCode);
+        PendingIntent cancel = PendingIntent.getService(context, view_id, active, PendingIntent.FLAG_CANCEL_CURRENT);
+		cancel.cancel();
 	}
 	
 	

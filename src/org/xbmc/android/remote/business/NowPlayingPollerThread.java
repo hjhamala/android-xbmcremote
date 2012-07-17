@@ -136,11 +136,12 @@ public class NowPlayingPollerThread extends Thread {
 	
 	public synchronized void subscribe(Handler handler) {
 		// update handler on the state of affairs
-		final ICurrentlyPlaying currPlaying = mControl.getCurrentlyPlaying(mManagerStub);
-		sendSingleMessage(handler, MESSAGE_PROGRESS_CHANGED, currPlaying);
-		sendSingleMessage(handler, MESSAGE_PLAYLIST_ITEM_CHANGED, currPlaying);
-		sendSingleMessage(handler, MESSAGE_COVER_CHANGED, currPlaying);
-		Log.i(TAG, "Registered handler");
+		// no need to, runner does this
+		//final ICurrentlyPlaying currPlaying = mControl.getCurrentlyPlaying(mManagerStub);
+		//sendSingleMessage(handler, MESSAGE_PROGRESS_CHANGED, currPlaying);
+		//sendSingleMessage(handler, MESSAGE_PLAYLIST_ITEM_CHANGED, currPlaying);
+		//sendSingleMessage(handler, MESSAGE_COVER_CHANGED, currPlaying);
+		//Log.i(TAG, "Registered handler");
 		
 		mSubscribers.add(handler);
 		Log.i(TAG, "Subscribers" + mSubscribers.size());
@@ -195,7 +196,8 @@ public class NowPlayingPollerThread extends Thread {
 		Log.i(TAG, "Thread-id: " + this.getId());
 		while (!isInterrupted() ) {
 			if (subscribers.size() > 0){
-				Log.i(TAG, "Subscribers: " + subscribers.size());
+				
+
 				/*				
 				 * if (!control.isConnected()) {
 					sendEmptyMessage(MESSAGE_CONNECTION_ERROR);
@@ -277,8 +279,7 @@ public class NowPlayingPollerThread extends Thread {
 			  	  		}
 					}
 				} else {
-					Log.i(TAG, "No listeners");
-					Log.i(TAG, "Subscribers: " + subscribers.size());
+					
 					// No need to keep thread running, if empty
 					this.interrupt();
 				}

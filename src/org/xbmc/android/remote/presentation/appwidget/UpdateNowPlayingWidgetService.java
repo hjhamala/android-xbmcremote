@@ -36,7 +36,7 @@ import android.widget.RemoteViews;
 public class UpdateNowPlayingWidgetService extends Service implements Callback {
 	private static final String LOG = "UpdateNowPlayingWidgetService";
 	public static final String COMMAND = "org.xbmc.android.remote.StartCommand";
-	public static final int START_SERVICE = 1;
+	public static final int START_POLLING = 1;
 	public static final int STOP_POLLING = 2;
 	public static final int START_AFTER_SLEEP = 3;
 	public static final int SEND_BUTTON = 4;
@@ -68,15 +68,15 @@ public class UpdateNowPlayingWidgetService extends Service implements Callback {
 		// Setup AppWidgetRemoteController
 		setupAppWidgetRemoteController();
 
-		Log.i(LOG, "OnStart");
 		Bundle extras = intent.getExtras();
 
 		if (extras != null && extras.containsKey(COMMAND)) {
 			switch (extras.getInt(COMMAND)) {
-			case START_SERVICE:
+			case START_POLLING:
 				if (mReceiver.isScreenOn()) {
 					error_count = 0;
 					subscribeNowPlayingPoller();
+					
 				} else {
 					// Screen is off, there is no need to keep service polling
 					unSubscribeNowPlayingPoller();
@@ -90,7 +90,6 @@ public class UpdateNowPlayingWidgetService extends Service implements Callback {
 				break;
 			case SEND_BUTTON:
 
-				Log.i(LOG, "" + extras.getString("" + SEND_BUTTON));
 				error_count = 0;
 				mAppWidgetRemoteController.sendButton(extras.getString(""
 						+ SEND_BUTTON));
@@ -115,7 +114,6 @@ public class UpdateNowPlayingWidgetService extends Service implements Callback {
 
 	private void registerSystemListener() {
 		if (mReceiver == null) {
-			Log.i(LOG, "Register Listener");
 			IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
 			filter.addAction(Intent.ACTION_SCREEN_OFF);
 			filter.addAction(SystemMessageReceiver.COMMAND);
@@ -147,6 +145,7 @@ public class UpdateNowPlayingWidgetService extends Service implements Callback {
 			} else {
 				// Too many errors, user need to manually start the widget again
 				Log.e(LOG, "Too many errors");
+				updateWidgetsOnError();
 				return;
 			}
 			last_error_milli_seconds = SystemClock.elapsedRealtime();
@@ -156,7 +155,7 @@ public class UpdateNowPlayingWidgetService extends Service implements Callback {
 		}
 	}
 
-	public boolean handleMessage(Message msg) {
+	public synchronized boolean handleMessage(Message msg) {
 
 		final Bundle data = msg.getData();
 		final ICurrentlyPlaying currentlyPlaying = (ICurrentlyPlaying) data
@@ -166,13 +165,17 @@ public class UpdateNowPlayingWidgetService extends Service implements Callback {
 		switch (msg.what) {
 		case NowPlayingPollerThread.MESSAGE_CONNECTION_ERROR:
 		case NowPlayingPollerThread.MESSAGE_RECONFIGURE:
-			updateWidgetsOnError();
+			
 			sleepService();
 			break;
 		case NowPlayingPollerThread.MESSAGE_PROGRESS_CHANGED:
 		case NowPlayingPollerThread.MESSAGE_COVER_CHANGED:
 		case NowPlayingPollerThread.MESSAGE_PLAYSTATE_CHANGED:
-			updateWidgets(currentlyPlaying);
+			// We need to check if the error count is full so we dont rewrite error messages
+			if (error_count != ERROR_RETRIES){
+				updateWidgets(currentlyPlaying);
+			}
+			
 			break;
 		}
 		return true;
@@ -180,7 +183,6 @@ public class UpdateNowPlayingWidgetService extends Service implements Callback {
 
 	private void updateWidgetsOnError() {
 		// TODO Auto-generated method stub
-		Log.i(LOG, "Updating widgets");
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this
 				.getApplicationContext());
 		ComponentName thisWidget = new ComponentName(getApplicationContext(),
@@ -202,10 +204,10 @@ public class UpdateNowPlayingWidgetService extends Service implements Callback {
 									.getString(
 											R.string.make_sure_XBMC_webserver_is_enabled_and_XBMC_is_running));
 			remoteViews.setTextViewText(R.id.widget_now_playing_song, getString(R.string.click_here_to_retry_connection));
-			
+			// Setup start to frame
 			AppWidgetRemoteController.setupWidgetButtonforService(remoteViews,
-					getApplicationContext(), R.id.widget_now_playing_song, this,
-					"", COMMAND, START_SERVICE);
+					getApplicationContext(), R.id.widget_now_playing_relative_layout, this,
+					"", COMMAND, START_POLLING);
 			remoteViews.setTextViewText(R.id.widget_now_playing_duration, "");
 
 			attachPendingIntents(this.getApplicationContext(), remoteViews);
@@ -221,7 +223,6 @@ public class UpdateNowPlayingWidgetService extends Service implements Callback {
 	 */
 	public void updateWidgets(ICurrentlyPlaying currentlyPlaying) {
 
-		Log.i(LOG, "Updating widgets");
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this
 				.getApplicationContext());
 		ComponentName thisWidget = new ComponentName(getApplicationContext(),
@@ -297,9 +298,7 @@ public class UpdateNowPlayingWidgetService extends Service implements Callback {
 	}
 
 	@Override
-	public void onDestroy() {
-		// Cancel nowplaying polling
-		Log.i(LOG, "onDestroy");
+	public void onDestroy() {		
 		unregisterReceiver(mReceiver);
 		unSubscribeNowPlayingPoller();
 	}
@@ -367,7 +366,13 @@ public class UpdateNowPlayingWidgetService extends Service implements Callback {
 		AppWidgetRemoteController.setupWidgetButtonforActivity(remoteView,
 				context, R.id.widget_now_playing_open_movie_library,
 				MovieLibraryActivity.class);
-
+		
+		if (error_count == 0){
+			// There might be pending intent in frame after errors so lets remove it for sure
+			AppWidgetRemoteController.removeWidgetButtonForService(remoteView,
+					getApplicationContext(), R.id.widget_now_playing_relative_layout, this,
+					"", COMMAND, START_POLLING);
+		}
 	}
 
 }
