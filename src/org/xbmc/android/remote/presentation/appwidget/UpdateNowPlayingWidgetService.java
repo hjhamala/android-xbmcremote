@@ -2,6 +2,9 @@ package org.xbmc.android.remote.presentation.appwidget;
 
 import org.xbmc.android.remote.R;
 import org.xbmc.android.remote.business.NowPlayingPollerThread;
+import org.xbmc.android.remote.presentation.activity.MovieLibraryActivity;
+import org.xbmc.android.remote.presentation.activity.MusicLibraryActivity;
+import org.xbmc.android.remote.presentation.activity.TvShowLibraryActivity;
 import org.xbmc.android.remote.presentation.controller.AppWidgetRemoteController;
 import org.xbmc.android.util.ConnectionFactory;
 import org.xbmc.android.util.HostFactory;
@@ -9,6 +12,7 @@ import org.xbmc.api.data.IControlClient.ICurrentlyPlaying;
 import org.xbmc.api.object.Song;
 import org.xbmc.eventclient.ButtonCodes;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -269,6 +273,18 @@ public class UpdateNowPlayingWidgetService extends Service implements Callback {
 		AppWidgetRemoteController.setupWidgetButtonforService(remoteView,context,
 				R.id.widget_now_playing_button_next,this,
 				ButtonCodes.REMOTE_SKIP_PLUS, COMMAND, SEND_BUTTON);
+		
+		AppWidgetRemoteController.setupWidgetButtonforActivity(remoteView,context,
+				R.id.widget_now_playing_open_tv_shows_library, TvShowLibraryActivity.class
+				);
+		
+		AppWidgetRemoteController.setupWidgetButtonforActivity(remoteView,context,
+				R.id.widget_now_playing_open_music_library,MusicLibraryActivity.class
+				);
+		
+		AppWidgetRemoteController.setupWidgetButtonforActivity(remoteView,context,
+				R.id.widget_now_playing_open_movie_library,MovieLibraryActivity.class
+				);
 
 	}
 

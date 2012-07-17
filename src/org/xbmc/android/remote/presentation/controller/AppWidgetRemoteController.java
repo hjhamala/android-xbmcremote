@@ -1,6 +1,8 @@
 package org.xbmc.android.remote.presentation.controller;
 
 import org.xbmc.android.remote.business.Command;
+import org.xbmc.android.remote.presentation.activity.MusicLibraryActivity;
+import org.xbmc.android.remote.presentation.activity.TvShowLibraryActivity;
 import org.xbmc.android.remote.presentation.appwidget.RemoteControllerWidget;
 import org.xbmc.android.remote.presentation.appwidget.SystemMessageReceiver;
 import org.xbmc.android.remote.presentation.appwidget.UpdateNowPlayingWidgetService;
@@ -8,6 +10,8 @@ import org.xbmc.api.business.INotifiableManager;
 import org.xbmc.api.presentation.INotifiableController;
 
 import org.xbmc.android.remote.R;
+
+import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -95,6 +99,16 @@ public class AppWidgetRemoteController extends RemoteController implements
      // Make this pending intent unique to prevent updating other intents
         int requestID = (int) System.currentTimeMillis();
         remoteView.setOnClickPendingIntent(viewId, PendingIntent.getService(context, requestID, active, PendingIntent.FLAG_UPDATE_CURRENT));
+	}
+
+	public static void setupWidgetButtonforActivity(RemoteViews remoteView,
+			Context context, int view_id,
+			Class class1) {
+
+		Intent active = new Intent(context, class1);        
+	    // Make this pending intent unique to prevent updating other intents
+		int requestID = (int) System.currentTimeMillis();
+        remoteView.setOnClickPendingIntent(view_id, PendingIntent.getActivity(context, requestID, active, PendingIntent.FLAG_UPDATE_CURRENT));
 	}
 	
 	
