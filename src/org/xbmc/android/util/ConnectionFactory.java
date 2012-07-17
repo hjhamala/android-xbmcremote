@@ -152,6 +152,8 @@ public class ConnectionFactory {
 			sNowPlayingPoller = new NowPlayingPollerThread(context);
 			sNowPlayingPoller.subscribe(mNowPlayingHandler);
 			sNowPlayingPoller.start();			
+		} else {
+			sNowPlayingPoller.subscribe(mNowPlayingHandler);
 		}
 		
 		return sNowPlayingPoller;
