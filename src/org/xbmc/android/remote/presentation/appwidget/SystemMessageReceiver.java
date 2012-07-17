@@ -14,12 +14,9 @@ import android.util.Log;
  */
 public class SystemMessageReceiver extends BroadcastReceiver {
      
-    // thanks Jason
     public static boolean wasScreenOn = true;
     public static final String LOG = "SystemMessageReceiver";
     public static final String COMMAND = "org.xbmc.android.remote.StartCommand";
-    public static final String WAKEUP = "org.xbmc.android.remote.WakeUp";
-    public static final String BUTTON_COMMAND = "org.xbmc.android.remote.ButtonCommand";
     // This is really needed because in this api level we cannot access power managers functions
     public static volatile boolean is_screen_on = true;
     
@@ -46,5 +43,13 @@ public class SystemMessageReceiver extends BroadcastReceiver {
             context.startService(intent1);
         }
     }
-
+    
+    /**
+     * Returns last screen status, technically this is needed because xbmc remotes apilevel doesnt have necessary power manager
+     * functions which support screen status polling
+     * @return
+     */
+    public boolean isScreenOn(){
+    	return is_screen_on;
+    }
 }

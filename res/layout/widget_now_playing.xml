@@ -1,9 +1,11 @@
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" 
-		 android:background="@drawable/widget_shape" 
-		android:padding="4dp">
+        android:layout_height="fill_parent"
+        android:background="@drawable/widget_shape"
+        android:gravity="center_vertical"
+        android:padding="4dp" >
+
         <TextView
             android:id="@+id/widget_now_playing_artist"
             android:layout_width="wrap_content"
@@ -27,48 +29,45 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/widget_now_playing_artist"
+            android:layout_marginLeft="4dp"
+            android:layout_marginTop="4dp"
             android:layout_toRightOf="@+id/widget_now_playing_song"
-           	android:layout_marginTop="4dp"
-           	android:layout_marginLeft="4dp"
             android:text="Duration"
             android:textAppearance="?android:attr/textAppearanceSmall" />
-        
-        
-        
-        <ImageButton
-            android:id="@+id/widget_now_playing_button_prev"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginTop="4dp"
-            android:background="@drawable/button_prev" />
 
-        <ImageButton
-            android:id="@+id/widget_now_playing_button_stop"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/linearLayout1"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/widget_now_playing_button_prev"
-            android:layout_toRightOf="@+id/widget_now_playing_button_prev"
-            android:layout_marginLeft="4dp"
-            android:background="@drawable/button_stop" />
-        
-        <ImageButton
-            android:id="@+id/widget_now_playing_button_play"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/widget_now_playing_button_stop"
-            android:layout_toRightOf="@+id/widget_now_playing_button_stop"
-            android:layout_marginLeft="4dp"
-            android:background="@drawable/button_play" />
-		
-		<ImageButton
-            android:id="@+id/widget_now_playing_button_next"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/widget_now_playing_button_play"
-            android:layout_toRightOf="@+id/widget_now_playing_button_play"
-            android:layout_marginLeft="4dp"
-            android:background="@drawable/button_next" />
+            android:layout_alignParentBottom="true"
+            android:gravity="center_horizontal" >
+
+            <ImageButton
+                android:id="@+id/widget_now_playing_button_prev"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/button_prev" />
+
+            <ImageButton
+                android:id="@+id/widget_now_playing_button_stop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:background="@drawable/button_stop" />
+
+            <ImageButton
+                android:id="@+id/widget_now_playing_button_play"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:background="@drawable/button_play" />
+
+            <ImageButton
+                android:id="@+id/widget_now_playing_button_next"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:background="@drawable/button_next" />
+        </LinearLayout>
 
     </RelativeLayout>

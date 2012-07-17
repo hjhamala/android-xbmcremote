@@ -39,7 +39,7 @@ public class UpdateNowPlayingWidgetService extends Service implements Callback {
 	
 	private int[] allWidgetIds;
 	final Handler mNowPlayingHandler = new Handler(this);
-	private BroadcastReceiver mReceiver;
+	private SystemMessageReceiver mReceiver;
 
 	/** Number of errors in row */
 	private int error_count = 0;
@@ -68,8 +68,13 @@ public class UpdateNowPlayingWidgetService extends Service implements Callback {
 		if (extras != null && extras.containsKey(COMMAND)) {
 			switch (extras.getInt(COMMAND)) {
 			case START_SERVICE:
+				if (mReceiver.isScreenOn()){
 					error_count = 0;
 					subscribeNowPlayingPoller();
+				} else {
+					// Screen is off, there is no need to keep service polling
+					unSubscribeNowPlayingPoller();
+				}
 				break;
 			case START_AFTER_SLEEP:
 					subscribeNowPlayingPoller();
@@ -78,6 +83,7 @@ public class UpdateNowPlayingWidgetService extends Service implements Callback {
 				unSubscribeNowPlayingPoller();
 				break;
 			case SEND_BUTTON:
+				
 				Log.i(LOG, "" + extras.getString("" + SEND_BUTTON));
 				error_count = 0;
 				mAppWidgetRemoteController.sendButton(extras.getString("" + SEND_BUTTON));
