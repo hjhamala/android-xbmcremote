@@ -7,44 +7,13 @@
         android:gravity="center_vertical"
         android:padding="4dp" >
 
-        <TextView
-            android:id="@+id/widget_now_playing_artist"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:text="Artist"
-            android:layout_marginLeft="4dp"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-		
-        <TextView
-            android:id="@+id/widget_now_playing_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@+id/widget_now_playing_artist"
-            android:layout_marginTop="4dp"
-            android:text="Title"
-            android:layout_marginLeft="4dp"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-        
-        <TextView
-            android:id="@+id/widget_now_playing_song"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@+id/widget_now_playing_title"
-            android:layout_marginTop="4dp"
-            android:layout_marginLeft="4dp"
-            android:text="Song"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-
         <LinearLayout
             android:id="@+id/widget_now_playing_linear_layout_buttons"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:gravity="center_horizontal" 
-            android:layout_marginBottom="4dp">
+            android:layout_marginBottom="4dp"
+            android:gravity="center_horizontal" >
 
             <ImageButton
                 android:id="@+id/widget_now_playing_button_prev"
@@ -75,47 +44,98 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/linearLayout1"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_above="@+id/widget_now_playing_linear_layout_buttons"
-            
-            android:layout_marginBottom="8dp" 
+            android:layout_marginBottom="8dp"
             android:gravity="center_horizontal" >
 
             <Button
                 android:id="@+id/widget_now_playing_open_music_library"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="@drawable/button_empty"
                 android:text="@string/music"
-                android:textColor="@android:color/white" 
-                android:background="@drawable/button_empty" />
+                android:textColor="@android:color/white"
+                android:textSize="12dp" />
 
             <Button
                 android:id="@+id/widget_now_playing_open_movie_library"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="4dp"
-                android:textColor="@android:color/white" 
                 android:background="@drawable/button_empty"
-                android:text="@string/movies" />
+                android:text="@string/movies"
+                android:textColor="@android:color/white"
+                android:textSize="12dp" />
 
             <Button
                 android:id="@+id/widget_now_playing_open_tv_shows_library"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="4dp"
-                android:textColor="@android:color/white" 
                 android:background="@drawable/button_empty"
-                android:text="@string/tv_shows" />
+                android:text="@string/tv_shows"
+                android:textColor="@android:color/white"
+                android:textSize="12dp" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/widget_now_playing_duration"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/widget_now_playing_song"
-            android:layout_below="@+id/widget_now_playing_song"
-            android:text="Duration"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_above="@+id/linearLayout1"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/widget_info_area" 
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginTop="4dp">
+
+            <TextView
+                android:id="@+id/widget_now_playing_artist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginLeft="8dp"
+                android:text="Artist"
+                android:textColor="@android:color/white"
+                android:textSize="16dp" />
+
+            <TextView
+                android:id="@+id/widget_now_playing_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginLeft="8dp"                
+                android:layout_below="@+id/widget_now_playing_artist"
+                android:text="Title"
+                android:textColor="@android:color/white"
+                android:textSize="12dp" />
+
+            <TextView
+                android:id="@+id/widget_now_playing_song"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginLeft="8dp"
+                
+                android:layout_below="@+id/widget_now_playing_title"
+                android:textColor="@android:color/white"
+                android:text="Song"
+                android:textSize="12dp" />
+
+            <TextView
+                android:id="@+id/widget_now_playing_duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginLeft="8dp"
+                android:layout_below="@+id/widget_now_playing_song"
+                android:textColor="@android:color/white"                
+                android:text="Duration"
+                android:textSize="12dp" />
+
+        </RelativeLayout>
 
     </RelativeLayout>

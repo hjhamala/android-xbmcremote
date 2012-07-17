@@ -137,10 +137,10 @@ public class NowPlayingPollerThread extends Thread {
 	public synchronized void subscribe(Handler handler) {
 		// update handler on the state of affairs
 		// no need to, runner does this
-		//final ICurrentlyPlaying currPlaying = mControl.getCurrentlyPlaying(mManagerStub);
-		//sendSingleMessage(handler, MESSAGE_PROGRESS_CHANGED, currPlaying);
-		//sendSingleMessage(handler, MESSAGE_PLAYLIST_ITEM_CHANGED, currPlaying);
-		//sendSingleMessage(handler, MESSAGE_COVER_CHANGED, currPlaying);
+		final ICurrentlyPlaying currPlaying = mControl.getCurrentlyPlaying(mManagerStub);
+		sendSingleMessage(handler, MESSAGE_PROGRESS_CHANGED, currPlaying);
+		sendSingleMessage(handler, MESSAGE_PLAYLIST_ITEM_CHANGED, currPlaying);
+		sendSingleMessage(handler, MESSAGE_COVER_CHANGED, currPlaying);
 		//Log.i(TAG, "Registered handler");
 		
 		mSubscribers.add(handler);
